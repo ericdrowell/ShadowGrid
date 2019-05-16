@@ -1,0 +1,19 @@
+{
+  "esversion": 6,
+  "unused": true, // prevent unused variables
+  "undef": true,
+  "debug": true, // allow debugger
+  "loopfunc": true,
+  "globals": {
+    "require": true,
+    "document": true,
+    "module": true,
+    "window": true,
+    "requestAnimationFrame": true,
+    "alert": true,
+    "console": true,
+    "module": true,
+    "define": true,
+    "exports": true
+  }
+}

@@ -1,10 +1,47 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <style>
+      #container {
+        background-color: blue;
+      }
+
+      .shadow-grid-viewport {
+        background-color: red;
+      }
+
+      .shadow-grid-table {
+        background-color: yellow;
+      }
+    </style>
+  </head>
   <body>
     <div id="container"></div>
     <script src="../dist/shadow-grid.js"></script>
     <script>
-      console.log('here2')
+      let grid = new ShadowGrid({
+        container: document.getElementById('container'),
+        rowHeights: [20, 20],
+        colWidths: [200, 200],
+        viewportWidth: 500,
+        viewportHeight: 400,
+        rows: [
+          // row 1
+          [
+            {val: 1},
+            {val: 2}
+          ],
+          // row 2
+          [
+            {val: 3},
+            {val: 4}
+          ]
+        ],
+        cellRenderer: function(cell) {
+          return cell.val;
+        }
+      });
+      console.log('done.');
     </script>
   </body>
 </html>
