@@ -21,7 +21,8 @@ const ShadowGrid = function(config) {
   this.table.style.position = 'relative';
   this.table.className = 'shadow-grid-table';
 
-  this.setTableSize();
+  this.setSizesAndAggregations();
+  this.setViewportColsAndRows();
   this.buildPool();
   this.updatePool();
 
@@ -30,12 +31,50 @@ const ShadowGrid = function(config) {
 };
 
 ShadowGrid.prototype = {
+  setViewportColsAndRows: function() {
+    let avgCellWidth = Math.round(this.tableWidth / this.numCols);
+    let avgCellHeight = Math.round(this.tableHeight / this.numRows);
+    this.numColsInViewport = Math.round(this.viewportWidth / avgCellWidth);
+    this.numRowsInViewport = Math.round(this.viewportHeight / avgCellHeight);
+  },
   getRowIndexFromCellIndex: function(cellIndex) {
     return Math.floor(cellIndex / this.numCols);
   },
 
   getColIndexFromCellIndex: function(cellIndex) {
     return cellIndex % this.numCols;
+  },
+
+  getTopLeftCellIndexInViewport: function() {
+    let viewport = this.viewport;
+    
+    let xIndex = Math.round(this.numCols * viewport.scrollLeft / this.tableWidth);
+    let yIndex = Math.round(this.numRows * viewport.scrollTop / this.tableHeight);
+
+    //console.log(xIndex, yIndex);
+
+    return yIndex * this.numCols + xIndex;
+  },
+
+  getCellsInViewport: function() {
+    let cellIndex = this.getTopLeftCellIndexInViewport();
+    //let numCols = this.numCols;
+    let numColsInViewport = 4;
+    let numRowsInViewport = 3;
+
+    let cellIndices = [];
+
+    
+    for (let r = 0; r<numRowsInViewport; r++) {
+      for (let c = 0; c<numColsInViewport; c++) {
+        cellIndices.push(cellIndex);
+        cellIndex++;
+      }
+    }
+
+    console.log(cellIndices);
+
+    return cellIndices;
   },
 
   updatePool: function() {
@@ -47,31 +86,30 @@ ShadowGrid.prototype = {
     let cells = this.cells;
     let cellXs = this.cellXs;
     let cellYs = this.cellYs;
-
-    let cellIndices = [];
-
-    for (let n=0; n<this.pool.length; n++) {
-      cellIndices.push(n);
-    }
-    
     let pool = this.pool;
-    
-    for (let cellIndex of cellIndices) {
-      let poolIndex = cellIndex;
+    let cellIndices = this.getCellsInViewport();
+
+    // for now, always update all pool cells.  Can optimize later to skip
+    // the pool cells that don't need to be updated
+    for (let n=0; n<cellIndices.length; n++) {
+      let cellIndex = cellIndices[n];
+      let poolIndex = n;
       let cell = cells[cellIndex];
       let poolCell = pool[poolIndex];
       let rowIndex = this.getRowIndexFromCellIndex(cellIndex);
       let colIndex = this.getColIndexFromCellIndex(cellIndex);
 
-      poolCell.innerHTML = cell.val;
-      poolCell.style.width = cellWidths[colIndex] + 'px';
-      poolCell.style.height = cellHeights[rowIndex] + 'px';
-      poolCell.style.left = cellXs[colIndex] + 'px';
-      poolCell.style.top = cellYs[rowIndex] + 'px';
+      if (cell) {
+        poolCell.innerHTML = this.cellRenderer(cell);
+        poolCell.style.width = cellWidths[colIndex] + 'px';
+        poolCell.style.height = cellHeights[rowIndex] + 'px';
+        poolCell.style.left = cellXs[colIndex] + 'px';
+        poolCell.style.top = cellYs[rowIndex] + 'px';
+      }
     }
   },
   buildPool: function() {
-    let poolSize = 16;
+    let poolSize = this.numColsInViewport * this.numRowsInViewport;
     this.pool = [];
 
     let frag = document.createDocumentFragment();
@@ -88,7 +126,7 @@ ShadowGrid.prototype = {
 
     this.table.appendChild(frag);
   },
-  setTableSize: function() {
+  setSizesAndAggregations: function() {
     let tableWidth = 0;
     let tableHeight = 0;
     let cellXs = [];
