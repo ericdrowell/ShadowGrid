@@ -45,6 +45,7 @@ const ShadowGrid = function(config) {
   
   this.table = document.createElement('div');
   this.table.style.display = 'inline-block';
+  this.table.style.position = 'relative';
   this.table.className = 'shadow-grid-table';
 
   this.setTableSize();
@@ -56,6 +57,14 @@ const ShadowGrid = function(config) {
 };
 
 ShadowGrid.prototype = {
+  getRowIndexFromCellIndex: function(cellIndex) {
+    return Math.floor(cellIndex / this.numCols);
+  },
+
+  getColIndexFromCellIndex: function(cellIndex) {
+    return cellIndex % this.numCols;
+  },
+
   updatePool: function() {
     //let numRows = this.numRows;
     //let numCols = this.numCols;
@@ -63,10 +72,12 @@ ShadowGrid.prototype = {
     let cellWidths = this.cellWidths;
     let cellHeights = this.cellHeights;
     let cells = this.cells;
+    let cellXs = this.cellXs;
+    let cellYs = this.cellYs;
 
     let cellIndices = [];
 
-    for (let n=0; n<this.poolSize; n++) {
+    for (let n=0; n<this.pool.length; n++) {
       cellIndices.push(n);
     }
     
@@ -76,19 +87,18 @@ ShadowGrid.prototype = {
       let poolIndex = cellIndex;
       let cell = cells[cellIndex];
       let poolCell = pool[poolIndex];
-
-      let rowIndex = 0;
-      let colIndex = 0;
+      let rowIndex = this.getRowIndexFromCellIndex(cellIndex);
+      let colIndex = this.getColIndexFromCellIndex(cellIndex);
 
       poolCell.innerHTML = cell.val;
       poolCell.style.width = cellWidths[colIndex] + 'px';
       poolCell.style.height = cellHeights[rowIndex] + 'px';
+      poolCell.style.left = cellXs[colIndex] + 'px';
+      poolCell.style.top = cellYs[rowIndex] + 'px';
     }
   },
   buildPool: function() {
-    let poolSize = 20;
-
-    this.poolSize = poolSize;
+    let poolSize = 16;
     this.pool = [];
 
     let frag = document.createDocumentFragment();
@@ -97,6 +107,7 @@ ShadowGrid.prototype = {
       let cell = document.createElement('div');
       cell.className = 'shadow-grid-cell';
       cell.style.display = 'inline-block';
+      cell.style.position = 'absolute';
 
       this.pool.push(cell);
       frag.appendChild(cell);
@@ -107,16 +118,24 @@ ShadowGrid.prototype = {
   setTableSize: function() {
     let tableWidth = 0;
     let tableHeight = 0;
+    let cellXs = [];
+    let cellYs = [];
 
-    for (let height of this.cellHeights) {
+    for (let h=0; h<this.cellHeights.length; h++) {
+      let height = this.cellHeights[h];
+      cellYs[h] = tableHeight;
       tableHeight += height;
     }
-    for (let width of this.cellWidths) {
+    for (let w=0; w<this.cellWidths.length; w++) {
+      let width = this.cellWidths[w];
+      cellXs[w] = tableWidth;
       tableWidth += width;
     }
 
     this.tableWidth = tableWidth;
     this.tableHeight = tableHeight;
+    this.cellXs = cellXs;
+    this.cellYs = cellYs;
 
     this.table.style.width = tableWidth + 'px';
     this.table.style.height = tableHeight + 'px';
