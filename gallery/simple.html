@@ -2,16 +2,9 @@
 <html>
   <head>
     <style>
-      #container {
-        background-color: blue;
-      }
-
-      .shadow-grid-viewport {
-        background-color: red;
-      }
 
       .shadow-grid-table {
-        background-color: yellow;
+        background-color: #eee;
       }
 
       .shadow-grid-cell {
@@ -28,17 +21,33 @@
     <script>
       let grid = new ShadowGrid({
         container: document.getElementById('container'),
-        numRows: 2,
-        numCols: 2,
-        cellWidths: [200, 200],
-        cellHeights: [200, 200],
-        viewportWidth: 250,
-        viewportHeight: 250,
+        numCols: 4,
+        numRows: 5,
+        cellWidths: [200, 200, 200, 200],
+        cellHeights: [200, 200, 200, 200, 200],
+        viewportWidth: 700,
+        viewportHeight: 500,
         cells: [
+          {val: 0},
           {val: 1},
           {val: 2},
           {val: 3},
-          {val: 4}
+          {val: 4},
+          {val: 5},
+          {val: 6},
+          {val: 7},
+          {val: 8},
+          {val: 9},
+          {val: 10},
+          {val: 11},
+          {val: 12},
+          {val: 13},
+          {val: 14},
+          {val: 15},
+          {val: 16},
+          {val: 17},
+          {val: 18},
+          {val: 19}
         ],
         cellRenderer: function(cell) {
           return cell.val;

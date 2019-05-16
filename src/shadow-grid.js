@@ -36,7 +36,13 @@ ShadowGrid.prototype = {
     let cellWidths = this.cellWidths;
     let cellHeights = this.cellHeights;
     let cells = this.cells;
-    let cellIndices = [0, 1, 2, 3];
+
+    let cellIndices = [];
+
+    for (let n=0; n<this.poolSize; n++) {
+      cellIndices.push(n);
+    }
+    
     let pool = this.pool;
     
     for (let cellIndex of cellIndices) {
@@ -53,8 +59,9 @@ ShadowGrid.prototype = {
     }
   },
   buildPool: function() {
-    let poolSize = 4;
+    let poolSize = 20;
 
+    this.poolSize = poolSize;
     this.pool = [];
 
     let frag = document.createDocumentFragment();
