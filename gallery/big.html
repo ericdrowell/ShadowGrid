@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+
+      .shadow-grid-table {
+        background-color: #eee;
+      }
+
+      .shadow-grid-cell {
+        box-sizing: border-box;
+        border-right: 2px solid #333;
+        border-bottom: 2px solid #333;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script src="../dist/shadow-grid.js"></script>
+    <script>
+      const NUM_COLS = 1000;
+      const NUM_ROWS = 10000;
+
+      let cellWidths = new Array(NUM_COLS).fill(100);
+      let cellHeights = new Array(NUM_ROWS).fill(30);
+
+      let cells = [];
+
+      let numCells = NUM_COLS * NUM_ROWS;
+
+      for (let n=0; n<numCells; n++) {
+        cells.push({val: n});
+      }
+
+      let grid = new ShadowGrid({
+        container: document.getElementById('container'),
+        numCols: NUM_COLS,
+        numRows: NUM_ROWS,
+        cellWidths: cellWidths,
+        cellHeights: cellHeights,
+        viewportWidth: 500,
+        viewportHeight: 300,
+        cells: cells,
+        cellRenderer: function(cell) {
+          return cell.val;
+        }
+      });
+      console.log(grid);
+    </script>
+  </body>
+</html>

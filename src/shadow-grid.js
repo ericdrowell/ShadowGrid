@@ -1,4 +1,7 @@
 const ShadowGrid = function(config) {
+  let that = this;
+
+  this.numBufferCells = config.numBufferCells || 2;
   this.cellHeights = config.cellHeights;
   this.cellWidths = config.cellWidths;
   this.cells = config.cells;
@@ -8,6 +11,7 @@ const ShadowGrid = function(config) {
   this.numCols = config.numCols;
   this.viewportWidth = config.viewportWidth;
   this.viewportHeight = config.viewportHeight;
+  this.dirty = true;
 
   this.viewport = document.createElement('div');
   this.viewport.className = 'shadow-grid-viewport';
@@ -15,6 +19,9 @@ const ShadowGrid = function(config) {
   this.viewport.style.width = this.viewportWidth + 'px';
   this.viewport.style.height = this.viewportHeight + 'px';
   this.viewport.style.overflow = 'scroll';
+  this.viewport.addEventListener('scroll', function() {
+    that.dirty = true;
+  });
   
   this.table = document.createElement('div');
   this.table.style.display = 'inline-block';
@@ -24,18 +31,32 @@ const ShadowGrid = function(config) {
   this.setSizesAndAggregations();
   this.setViewportColsAndRows();
   this.buildPool();
-  this.updatePool();
+  this.updateLoop();
 
   this.viewport.appendChild(this.table);
   this.container.appendChild(this.viewport);
+
+
 };
 
 ShadowGrid.prototype = {
+  updateLoop: function() {
+    let that = this;
+
+    //if (this.dirty) {
+      this.updatePool();
+      this.dirty = false;
+    //}
+
+    requestAnimationFrame(function() {
+      that.updateLoop();
+    });
+  },
   setViewportColsAndRows: function() {
     let avgCellWidth = Math.round(this.tableWidth / this.numCols);
     let avgCellHeight = Math.round(this.tableHeight / this.numRows);
-    this.numColsInViewport = Math.round(this.viewportWidth / avgCellWidth);
-    this.numRowsInViewport = Math.round(this.viewportHeight / avgCellHeight);
+    this.numColsInViewport = Math.round(this.viewportWidth / avgCellWidth) + this.numBufferCells * 2;
+    this.numRowsInViewport = Math.round(this.viewportHeight / avgCellHeight) + this.numBufferCells * 2;
   },
   getRowIndexFromCellIndex: function(cellIndex) {
     return Math.floor(cellIndex / this.numCols);
@@ -46,41 +67,32 @@ ShadowGrid.prototype = {
   },
 
   getTopLeftCellIndexInViewport: function() {
-    let viewport = this.viewport;
-    
+    let viewport = this.viewport;    
     let xIndex = Math.round(this.numCols * viewport.scrollLeft / this.tableWidth);
     let yIndex = Math.round(this.numRows * viewport.scrollTop / this.tableHeight);
 
-    //console.log(xIndex, yIndex);
-
-    return yIndex * this.numCols + xIndex;
+    return yIndex * this.numCols + xIndex - this.numBufferCells;
   },
 
   getCellsInViewport: function() {
-    let cellIndex = this.getTopLeftCellIndexInViewport();
-    //let numCols = this.numCols;
-    let numColsInViewport = 4;
-    let numRowsInViewport = 3;
-
+    let topLeftCellIndex = this.getTopLeftCellIndexInViewport();
+    let numColsInViewport = this.numColsInViewport;
+    let numRowsInViewport = this.numRowsInViewport;
     let cellIndices = [];
+    let cellIndex;
 
-    
     for (let r = 0; r<numRowsInViewport; r++) {
+      cellIndex = topLeftCellIndex + (this.numCols * r);
       for (let c = 0; c<numColsInViewport; c++) {
         cellIndices.push(cellIndex);
         cellIndex++;
       }
     }
 
-    console.log(cellIndices);
-
     return cellIndices;
   },
 
   updatePool: function() {
-    //let numRows = this.numRows;
-    //let numCols = this.numCols;
-
     let cellWidths = this.cellWidths;
     let cellHeights = this.cellHeights;
     let cells = this.cells;
@@ -105,14 +117,17 @@ ShadowGrid.prototype = {
         poolCell.style.height = cellHeights[rowIndex] + 'px';
         poolCell.style.left = cellXs[colIndex] + 'px';
         poolCell.style.top = cellYs[rowIndex] + 'px';
+        poolCell.style.display = 'inline-block';
+      }
+      else {
+        poolCell.style.display = 'none';
       }
     }
   },
   buildPool: function() {
     let poolSize = this.numColsInViewport * this.numRowsInViewport;
-    this.pool = [];
-
     let frag = document.createDocumentFragment();
+    this.pool = [];
 
     for (let n =0; n<poolSize; n++) {
       let cell = document.createElement('div');
