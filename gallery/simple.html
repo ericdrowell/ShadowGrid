@@ -13,6 +13,13 @@
       .shadow-grid-table {
         background-color: yellow;
       }
+
+      .shadow-grid-cell {
+        box-sizing: border-box;
+        border-right: 2px solid #333;
+        border-bottom: 2px solid #333;
+        padding: 5px;
+      }
     </style>
   </head>
   <body>
@@ -21,21 +28,17 @@
     <script>
       let grid = new ShadowGrid({
         container: document.getElementById('container'),
-        rowHeights: [20, 20],
-        colWidths: [200, 200],
-        viewportWidth: 500,
-        viewportHeight: 400,
-        rows: [
-          // row 1
-          [
-            {val: 1},
-            {val: 2}
-          ],
-          // row 2
-          [
-            {val: 3},
-            {val: 4}
-          ]
+        numRows: 2,
+        numCols: 2,
+        cellWidths: [200, 200],
+        cellHeights: [200, 200],
+        viewportWidth: 250,
+        viewportHeight: 250,
+        cells: [
+          {val: 1},
+          {val: 2},
+          {val: 3},
+          {val: 4}
         ],
         cellRenderer: function(cell) {
           return cell.val;
