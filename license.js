@@ -1,8 +1,8 @@
 /*
- * Taboo v@@VERSION
+ * Shadow Grid v@@VERSION
  * A high performance table rendering engine for the web
  * Release Date: @@DATE
- * https://github.com/ericdrowell/taboo
+ * https://github.com/ericdrowell/shadow-grid
  * Licensed under the MIT or GPL Version 2 licenses.
  *
  * Copyright (C) @@YEAR Eric Rowell @ericdrowell
