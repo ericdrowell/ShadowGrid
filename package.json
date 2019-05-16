@@ -1,0 +1,52 @@
+{
+  "name": "taboo",
+  "version": "0.0.1",
+  "main": "dist/taboo.min.js",
+  "author": "Eric Rowell",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericdrowell/taboo.git"
+  },
+  "keywords": [
+    "graph",
+    "data",
+    "visualization",
+    "tree",
+    "webgl",
+    "force",
+    "directed",
+    "network",
+    "cluster"
+  ],
+  "devDependencies": {
+    "concat": "^1.0.3",
+    "jshint": "^2.9.5",
+    "npm-watch": "^0.4.0",
+    "replace": "^1.1.0",
+    "uglify-es": "^3.3.9"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": [
+        "js",
+        "scss",
+        "frag",
+        "vert"
+      ],
+      "legacyWatch": true,
+      "delay": 0
+    }
+  },
+  "scripts": {
+    "build": "npm run jshint && npm run prep-dists && cp src/taboo.js dist/taboo.js && npm run uglify && npm run add-license",
+    "jshint": "jshint src/",
+    "prep-dists": "rm -rf dist && mkdir dist",
+    "uglify": "uglifyjs dist/taboo.js -c -m -o dist/taboo.min.js",
+    "watch": "npm-watch",
+    "add-license": "concat -o dist/taboo.js license.js dist/taboo.js && concat -o dist/taboo.min.js license.js dist/taboo.min.js && replace '@@VERSION' $npm_package_version dist/taboo.js dist/taboo.min.js && replace '@@DATE' $(date '+%m-%d-%Y') dist/taboo.js dist/taboo.min.js && replace '@@YEAR' $(date '+%Y') dist/taboo.js dist/taboo.min.js"
+  }
+}
